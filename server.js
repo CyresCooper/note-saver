@@ -21,12 +21,12 @@ app.get('/notes', (req, res) => {
 });
 
 app.post("/api/notes", function (req, res) {
-    fs.readFile(__dirname + "/db/db.json", 'utf8', function (error, notes) {
+    fs.readFile(__dirname + "/db/db.json", function (error, notes) {
       if (error) {
         return console.log(error)
       }
       notes = JSON.parse(notes)
-      let id = notes[notes.length - 1].id + 1
+      let id = Math.floor(Math.random()*1000)
       let newNote = { title: req.body.title, text: req.body.text, id: id }
       let activeNote = notes.concat(newNote)
       fs.writeFile(__dirname + "/db/db.json", JSON.stringify(activeNote), function (error, data) {
@@ -38,8 +38,27 @@ app.post("/api/notes", function (req, res) {
       })
     })
   })
+  
+  
+  function deleteNote(id, notesArray) {
+    for (let i = 0; i < notesArray.length; i++) {
+        let note = notesArray[i];
 
+        if (note.id == id) {
+            notesArray.splice(i, 1);
+            fs.writeFileSync(
+                path.join(__dirname, './db/db.json'),
+                JSON.stringify(notesArray, null, 2)
+            );
 
+        
+        }
+    }
+}
+app.delete('/api/notes/:id', (req, res) => {
+    deleteNote(req.params.id, allNotes);
+    res.json(true);
+});
 
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '/public/index.html'));
