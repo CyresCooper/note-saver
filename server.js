@@ -13,8 +13,9 @@ app.use(express.json());
 //get functions 
 
 app.get('/api/notes', (req, res) => {
-  res.json(allNotes.slice(1));
-});
+  let savedNotes = JSON.parse(fs.readFileSync("./db/db.json", "utf8"));
+  res.json(savedNotes.slice(1))
+}); 
 
 app.get('/notes', (req, res) => {
   res.sendFile(path.join(__dirname, '/public/notes.html'));
